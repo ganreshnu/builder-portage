@@ -72,6 +72,9 @@ Main() {
 			exec "$@"
 		fi
 }
+LocaleGen() {
+	locale-gen --prefix="$PWD"/"$*" --update
+}
 # join arguments with first
 # Usage: Join , "${array[@]}"
 Join() {
@@ -109,9 +112,8 @@ ExpectVal() {
 	v="${1#*=}"
 }
 # import other functions
+. /usr/share/entrypoint/emerge.bash
 . /usr/share/entrypoint/nconfig.bash
 . /usr/share/entrypoint/linux.bash
-. /usr/share/entrypoint/emerge.bash
-. /usr/share/entrypoint/mkoci.bash
 
 Main "$@"
