@@ -82,6 +82,9 @@ emerge() {
 	fuse-overlayfs -o lowerdir="${ Join : "${lowers[@]}"; }",upperdir="$root",workdir="$workdir" "$buildDir" &&
 		trap "fusermount3 -u $buildDir" EXIT
 
+	ln -s usr/bin "$buildDir"/bin
+	ln -s usr/sbin "$buildDir"/sbin
+
 	MAKEOPTS="-j$(( $nproc / "$numJobs" ))" KERNEL_DIR=/usr/src/linux \
 		command emerge --root="$buildDir" --jobs="$numJobs" "$@"
 }
