@@ -1,2 +1,4 @@
 sys-apps/util-linux -su -logger -hardlink
 sys-kernel/*-sources symlink
+sys-apps/systemd ukify boot
+dev-vcs/git -perl

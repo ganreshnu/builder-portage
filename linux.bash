@@ -133,6 +133,9 @@ linux() {
 	#
 	# create the uki
 	#
+	mkdir -p "$tree"/efi
+	ukify build --linux "$tree"/boot/vmlinuz --os-release "$tree"/usr/lib/os-release --initrd "$tree"/boot/initramfs.cpio.zst \
+		--uname "$kversion" --output "$tree"/efi/uki.efi
 }
 AddModule() {
 	local -n out="$1"; shift
