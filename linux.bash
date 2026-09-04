@@ -131,11 +131,18 @@ linux() {
 	fi
 
 	#
+	# create the bootloader
+	#
+	mkdir -p "$tree"/efi && chmod 0700 "$tree"/efi
+	mount --bind "$tree"/efi "$tree"/efi
+	SYSTEMD_RELAX_ESP_CHECKS=1 bootctl --variables=no --esp-path="$tree"/efi install
+	umount "$tree"/efi
+
+	#
 	# create the uki
 	#
-	mkdir -p "$tree"/efi
 	ukify build --linux "$tree"/boot/vmlinuz --os-release "$tree"/usr/lib/os-release --initrd "$tree"/boot/initramfs.cpio.zst \
-		--uname "$kversion" --output "$tree"/efi/uki.efi
+		--uname "$kversion" --output "$tree"/efi/EFI/Linux/linux-"$kversion".efi
 }
 AddModule() {
 	local -n out="$1"; shift
