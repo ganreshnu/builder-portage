@@ -21,6 +21,7 @@ Main() {
 
 	local nproc=${ nproc; }
 	local arch=x86
+	# local kernel='sys-kernel/vanilla-sources'
 	local kconfigs=()
 
 	local inMain=yes
@@ -34,12 +35,15 @@ Main() {
 			--arch* )
 				ExpectVal arch shiftnum "$@"; shift $shiftnum
 				;;
+			# --kernel* )
+			# 	ExpectVal kernel shiftnum "$@"; shift $shiftnum
+			# 	;;
 			--kconfig* )
 				local value=''
 				ExpectVal value shiftnum "$@"; shift $shiftnum
 				kconfigs+=( "$value" )
 				;;
-			nconfig|emerge|linux )
+			nconfig|emerge|linux|initramfs )
 				inMain=no
 				argv+=( "$1" )
 				;;
@@ -91,6 +95,11 @@ ApplyKConfigs() {
 		make --directory=/usr/src/linux "${ basename "$fragmentFile"; }" --quiet
 	done
 }
+# display a notice message
+# Usage: Notice STRING
+Notice() {
+	printf "${ tput setaf 3; tput bold; }[!!]${ tput sgr0; } %s\n" "$*"
+}
 # display an argument error
 # Usage: ArgError --reqarg 'is required'
 ArgError() {
@@ -112,8 +121,9 @@ ExpectVal() {
 	v="${1#*=}"
 }
 # import other functions
-. /usr/share/entrypoint/emerge.bash
 . /usr/share/entrypoint/nconfig.bash
+. /usr/share/entrypoint/emerge.bash
 . /usr/share/entrypoint/linux.bash
+. /usr/share/entrypoint/initramfs.bash
 
 Main "$@"

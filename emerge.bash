@@ -10,6 +10,7 @@ emerge() {
 			  --root DIRECTORY        The directory containing the root filesystem tree.
 			  --workdir DIRECTORY     OverlayFS workdir which must be on the same
 			                          partition as the layer directories.
+			  --confdir DIRECTORY     A directory containing the portage configuration.
 			  --help                  Display this message and exit.
 
 			Builds and installs EBUILDs to the specified --root directory. The --root
@@ -82,8 +83,11 @@ emerge() {
 	fuse-overlayfs -o lowerdir="${ Join : "${lowers[@]}"; }",upperdir="$root",workdir="$workdir" "$buildDir" &&
 		trap "fusermount3 -u $buildDir" EXIT
 
-	ln -s usr/bin "$buildDir"/bin
-	ln -s usr/sbin "$buildDir"/sbin
+	if [[ ! -L "$buildDir"/bin ]]; then
+		mkdir -p "$buildDir"/usr/{bin,sbin}
+		ln -s usr/bin "$buildDir"/bin
+		ln -s usr/sbin "$buildDir"/sbin
+	fi
 
 	MAKEOPTS="-j$(( $nproc / "$numJobs" ))" KERNEL_DIR=/usr/src/linux \
 		command emerge --root="$buildDir" --jobs="$numJobs" "$@"

@@ -13,8 +13,8 @@ RUN emerge --jobs=$jobs --update --newuse --deep @world
 # install a kernel and set default config
 RUN emerge --jobs=1 sys-kernel/vanilla-sources && {\
 	cd /usr/src/linux; \
+	make -C usr gen_init_cpio; \
 	make alldefconfig; \
-	make -C usr gen_init_cpio;\
 }
 # install tools
 RUN emerge --jobs=$jobs sys-fs/fuse-overlayfs
@@ -24,6 +24,7 @@ COPY verity-cert.config /usr/share/
 COPY emerge.bash /usr/share/entrypoint/
 COPY nconfig.bash /usr/share/entrypoint/
 COPY linux.bash /usr/share/entrypoint/
+COPY initramfs.bash /usr/share/entrypoint/
 
 COPY entrypoint.bash /usr/sbin/entrypoint
 RUN chmod a+x /usr/sbin/entrypoint
