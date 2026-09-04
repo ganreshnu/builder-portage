@@ -117,6 +117,8 @@ linux() {
 
 		depmod --basedir="$cpioRoot"/usr --outdir="$cpioRoot"/usr "$kversion"
 		systemd-sysusers --root="$cpioRoot"
+		# systemd-tmpfiles --root="$cpioRoot" --create --boot
+
 		# set root password
 		[[ -n "$rootpw" ]] && echo "root:$rootpw" |chpasswd --prefix /tmp/initramfs --encrypted
 
@@ -127,6 +129,10 @@ linux() {
 			| zstd --compress --stdout > "$tree"/boot/initramfs.cpio.zst
 		popd >/dev/null #/usr/src/linux/
 	fi
+
+	#
+	# create the uki
+	#
 }
 AddModule() {
 	local -n out="$1"; shift
