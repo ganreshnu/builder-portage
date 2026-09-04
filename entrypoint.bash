@@ -104,21 +104,21 @@ Notice() {
 # Usage: ArgError --reqarg 'is required'
 ArgError() {
 	local arg="$1"; shift
-	>&2 printf "${ tput setaf 1; }${ tput sitm; }%s${ tput ritm; } %s${ tput sgr0; }\n" "$arg" "$*"
+	>&2 printf "${ tput setaf 1; tput bold; }%s:${ tput sgr0; } ${ tput sitm; }%s${ tput ritm; } %s\n" "${BASH_SOURCE[1]}" "$arg" "$*"
 }
 # simple argument value parser.
 # Usage: ExpectVal value shiftnum "$@"
 ExpectVal() {
-	local -n v="$1"; shift
-	local -n s="$1"; shift
+	local -n val="$1"; shift
+	local -n sn="$1"; shift
 	local name="${1%%=*}"
-	s=0
+	sn=0
 	if [[ "$1" == "${name}" ]]; then
-		(( $# < 2 )) && { >&2 printf "${ tput setaf 1; }%s:${ tput sgr0; } ${ tput bold; }${ tput sitm; }%s${ tput ritm; }${ tput sgr0; } expects a value.\n" "${BASH_SOURCE[1]}" "$1"; } && return 1
-		v="$2"; s=1
+		(( $# < 2 )) && ArgError "$1" 'expects a value.' && return 1
+		val="$2"; sn=1
 		return 0
 	fi
-	v="${1#*=}"
+	val="${1#*=}"
 }
 # import other functions
 . /usr/share/entrypoint/nconfig.bash
