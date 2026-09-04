@@ -124,6 +124,6 @@ ExpectVal() {
 . /usr/share/entrypoint/nconfig.bash
 . /usr/share/entrypoint/emerge.bash
 . /usr/share/entrypoint/linux.bash
-. /usr/share/entrypoint/initramfs.bash
+. /usr/share/entrypoint/image.bash
 
 Main "$@"

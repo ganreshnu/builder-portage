@@ -24,7 +24,7 @@ COPY verity-cert.config /usr/share/
 COPY emerge.bash /usr/share/entrypoint/
 COPY nconfig.bash /usr/share/entrypoint/
 COPY linux.bash /usr/share/entrypoint/
-COPY initramfs.bash /usr/share/entrypoint/
+COPY image.bash /usr/share/entrypoint/
 
 COPY entrypoint.bash /usr/sbin/entrypoint
 RUN chmod a+x /usr/sbin/entrypoint
