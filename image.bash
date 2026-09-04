@@ -18,6 +18,7 @@ image() {
 
 	local workdir=''
 	local root=''
+	local definitions=''
 	local lowers=()
 
 	local argv=()
@@ -29,6 +30,9 @@ image() {
 				;;
 			--root* )
 				ExpectVal root shiftnum "$@"; shift $shiftnum
+				;;
+			--definitions* )
+				ExpectVal definitions shiftnum "$@"; shift $shiftnum
 				;;
 			-- )
 				shift; break
@@ -59,11 +63,16 @@ image() {
 		ArgError --workdir 'is required and must be an existing writable directory.'
 		return 1
 	fi
+	if [[ ! -d "$definitions" ]]; then
+		ArgError --definitions 'is required and must be an existing directory.'
+		return 1
+	fi
 
 	local -r tree="${ mktemp -d; }"
 	(( ${#lowers[@]} == 0 )) && lowers+=( /var/empty )
 	fuse-overlayfs -o lowerdir="${ Join : "${lowers[@]}"; }",workdir="$workdir" "$tree" &&
 		trap "fusermount3 -u $tree" EXIT
 
-
+	systemd-repart --root="$tree" --definitions="$definitions" \
+		--empty=create --size=auto --json=short "$root"/"disk".raw
 }

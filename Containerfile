@@ -17,7 +17,7 @@ RUN emerge --jobs=1 sys-kernel/vanilla-sources && {\
 	make alldefconfig; \
 }
 # install tools
-RUN emerge --jobs=$jobs sys-fs/fuse-overlayfs
+RUN emerge --jobs=$jobs sys-fs/fuse-overlayfs sys-fs/dosfstools sys-fs/mtools
 
 COPY verity-cert.config /usr/share/
 
