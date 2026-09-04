@@ -21,11 +21,7 @@ RUN emerge --jobs=$jobs sys-fs/fuse-overlayfs sys-fs/dosfstools sys-fs/mtools
 
 COPY verity-cert.config /usr/share/
 
-COPY emerge.bash /usr/share/entrypoint/
-COPY nconfig.bash /usr/share/entrypoint/
-COPY linux.bash /usr/share/entrypoint/
-COPY image.bash /usr/share/entrypoint/
-
+COPY functions /usr/share/entrypoint
 COPY entrypoint.bash /usr/sbin/entrypoint
 RUN chmod a+x /usr/sbin/entrypoint
 ENTRYPOINT [ "unshare", "--mount", "--map-users=all", "--map-groups=all", "entrypoint" ]
