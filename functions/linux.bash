@@ -26,6 +26,11 @@ linux() {
 	local rootpw=''
 	local lowers=()
 	local modules=()
+	local cmdline=(
+		consoleblank=60
+		rw rdinit=/usr/lib/systemd/systemd
+		# console=uart,io,0x3f8 console=tty0
+	)
 
 	local argv=()
 	while (( $# > 0 )); do
@@ -141,8 +146,9 @@ linux() {
 	#
 	# create the uki
 	#
+	printf "Creating UKI with commandline ${ tput bold; }%s${ tput sgr0; }.\n" "${cmdline[*]}"
 	ukify build --linux "$tree"/boot/vmlinuz --os-release "$tree"/usr/lib/os-release --initrd "$tree"/boot/initramfs.cpio.zst \
-		--uname "$kversion" --output "$tree"/efi/EFI/Linux/linux-"$kversion".efi
+		--uname "$kversion" --cmdline "${cmdline[*]}" --output "$tree"/efi/EFI/Linux/linux-"$kversion".efi
 }
 AddModule() {
 	local -n out="$1"; shift
