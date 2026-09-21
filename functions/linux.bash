@@ -28,7 +28,9 @@ linux() {
 	local modules=()
 	local cmdline=(
 		consoleblank=60
-		rw rdinit=/usr/lib/systemd/systemd
+		rw
+		# rdinit=/usr/bin/bash
+		rdinit=/usr/lib/systemd/systemd
 		# console=uart,io,0x3f8 console=tty0
 	)
 
