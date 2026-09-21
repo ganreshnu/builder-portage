@@ -8,8 +8,8 @@ COPY portage /etc/portage
 RUN emerge --jobs=$jobs dev-vcs/git
 RUN emerge --sync
 
-# update @world
-RUN emerge --jobs=$jobs --update --newuse --deep @world
+# update @world --update --deep
+RUN emerge --jobs=$jobs --newuse --deep @world
 # install a kernel and set default config
 RUN emerge --jobs=1 sys-kernel/vanilla-sources && {\
 	cd /usr/src/linux; \
