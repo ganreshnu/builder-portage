@@ -82,8 +82,10 @@ LocaleGen() {
 # join arguments with first
 # Usage: Join , "${array[@]}"
 Join() {
+	local oldIFS="$IFS"
 	IFS="$1"; shift
 	echo "$*"
+	IFS="$oldIFS"
 }
 # apply kernel configuration fragments
 # Usage: ApplyKConfigs "$@"
