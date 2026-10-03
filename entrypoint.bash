@@ -43,7 +43,7 @@ Main() {
 				ExpectVal value shiftnum "$@"; shift $shiftnum
 				kconfigs+=( "$value" )
 				;;
-			nconfig|emerge|linux|initramfs )
+			nconfig|emerge|linux|cpio|image|uki|bootloader )
 				inMain=no
 				argv+=( "$1" )
 				;;
@@ -64,10 +64,7 @@ Main() {
 		shift
 	done
 	argv+=( "$@" )
-	set - "${argv[@]}" && unset -v argv inMain
-
-	ApplyKConfigs "${kconfigs[@]}" &&
-		unset -v kconfigs
+	set - "${argv[@]}" && unset -v argv inMain shiftnum
 
 	(( $# == 0 )) && exec bash --login ||
 		if [[ "${ type -t "$1"; }" == function ]]; then
@@ -76,9 +73,19 @@ Main() {
 			exec "$@"
 		fi
 }
-LocaleGen() {
-	locale-gen --prefix="$PWD"/"$*" --update
+# prepare a directory with the appropriate symlinks.
+# Usage: PrepareRoot "$fsrootdir"
+PrepareRoot() {
+		ln -sf usr/bin "$*"/bin
+		ln -sf usr/bin "$*"/sbin
+		ln -sf usr/lib "$*"/lib
+		ln -sf usr/lib64 "$*"/lib64
+		mkdir -p "$*"/usr
+		ln -sf bin "$*"/usr/sbin
 }
+# LocaleGen() {
+# 	locale-gen --prefix="$PWD"/"$*" --update
+# }
 # join arguments with first
 # Usage: Join , "${array[@]}"
 Join() {
@@ -90,12 +97,19 @@ Join() {
 # apply kernel configuration fragments
 # Usage: ApplyKConfigs "$@"
 ApplyKConfigs() {
-	for fragmentFile in "$@"; do
+	kconfigs+=( "$@" )
+	for fragmentFile in "${kconfigs[@]}"; do
 		[[ ! -f /usr/src/linux/arch/"$arch"/configs/"$fragmentFile" ]] &&
 			cp "$fragmentFile" /usr/src/linux/arch/"$arch"/configs/
 		echo "Merging $fragmentFile"
 		make --directory=/usr/src/linux "${ basename "$fragmentFile"; }" --quiet
 	done
+	kconfigs=()
+}
+# KVersion
+# Usage: local kversion="${ KVersion; }"
+KVersion() {
+	make --directory=/usr/src/linux --quiet kernelversion
 }
 # display a notice message
 # Usage: Notice STRING
@@ -127,5 +141,8 @@ ExpectVal() {
 . /usr/share/entrypoint/emerge.bash
 . /usr/share/entrypoint/linux.bash
 . /usr/share/entrypoint/image.bash
+. /usr/share/entrypoint/cpio.bash
+. /usr/share/entrypoint/uki.bash
+. /usr/share/entrypoint/bootloader.bash
 
 Main "$@"
