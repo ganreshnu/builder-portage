@@ -38,6 +38,8 @@ nconfig() {
 		return 1
 	fi
 
+	ApplyKConfigs
+
 	local orig="${ mktemp; }"
 	cp /usr/src/linux/.config "$orig"
 	[[ -f "$*" ]] && ApplyKConfigs "$*"

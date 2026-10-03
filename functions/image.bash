@@ -4,35 +4,44 @@
 image() {
 	Usage() {
 		cat <<-EOD
-			Usage: image [OPTIONS] DIRECTORY...
+		Usage: image [OPTIONS] DIRECTORY...
 
-			Options:
-			  --root DIRECTORY        The directory containing the root filesystem tree.
-			  --workdir DIRECTORY     OverlayFS workdir which must be on the same
-			                          partition as the layer directories.
-			  --help                  Display this message and exit.
+		Options:
+		  --outdir DIRECTORY      The directory containing the root filesystem tree.
+		  --name STRING           The name of the image used in the filenames for the
+		                          image and associated data.
+		  --definitions           Definitions for systemd-repart.
+		  --help                  Display this message and exit.
 
-			Makes the image from the given directories.
+		Makes the image from the given directories and definitions.
 		EOD
 	}
 
-	local workdir=''
-	local root=''
+	# local workdir=''
+	local outdir=''
+	local name='image'
 	local definitions=''
+	local veritykey=''
 	local lowers=()
 
 	local argv=()
 	while (( $# > 0 )); do
 		local shiftnum=0
 		case "$1" in
-			--workdir* )
-				ExpectVal workdir shiftnum "$@"; shift $shiftnum
+			# --workdir* )
+			# 	ExpectVal workdir shiftnum "$@"; shift $shiftnum
+			# 	;;
+			--outdir* )
+				ExpectVal outdir shiftnum "$@"; shift $shiftnum
 				;;
-			--root* )
-				ExpectVal root shiftnum "$@"; shift $shiftnum
+			--name* )
+				ExpectVal name shiftnum "$@"; shift $shiftnum
 				;;
 			--definitions* )
 				ExpectVal definitions shiftnum "$@"; shift $shiftnum
+				;;
+			--veritykey* )
+				ExpectVal veritykey shiftnum "$@"; shift $shiftnum
 				;;
 			-- )
 				shift; break
@@ -55,12 +64,8 @@ image() {
 	set - "${argv[@]}" && unset -v argv
 
 	# validate arguments
-	if [[ ! -d "$root" ]]; then
-		ArgError --root 'is required and must be an existing writable directory.'
-		return 1
-	fi
-	if [[ ! -d "$workdir" ]]; then
-		ArgError --workdir 'is required and must be an existing writable directory.'
+	if [[ ! -d "$outdir" ]]; then
+		ArgError --outdir 'is required and must be an existing writable directory.'
 		return 1
 	fi
 	if [[ ! -d "$definitions" ]]; then
@@ -69,10 +74,9 @@ image() {
 	fi
 
 	local -r tree="${ mktemp -d; }"
-	(( ${#lowers[@]} == 0 )) && lowers+=( /var/empty )
-	fuse-overlayfs -o lowerdir="${ Join : "${lowers[@]}"; }",workdir="$workdir" "$tree" &&
+	fuse-overlayfs -o lowerdir="${ Join : "${lowers[@]}"; }" "$tree" &&
 		trap "fusermount3 -u $tree" EXIT
 
 	systemd-repart --root="$tree" --definitions="$definitions" \
-		--empty=create --size=auto --json=short "$root"/"disk".raw
+		--empty=create --size=auto --json=short "$@" "$outdir"/"$name".raw > "$outdir"/"$name".json
 }

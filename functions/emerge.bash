@@ -51,7 +51,7 @@ emerge() {
 				;;
 			* )
 				if [[ -d "$1" ]]; then
-					lowers=( "$1" "${lowers[@]}" )
+					lowers+=( "$1" )
 				else
 					argv+=( "$1" )
 				fi
@@ -77,18 +77,19 @@ emerge() {
 			tar --directory=/etc/portage --extract --keep-directory-symlink
 	done
 
-	# mount the overlay
-	local -r buildDir=/"$root"; mkdir -p "$buildDir";
-	(( ${#lowers[@]} == 0 )) && lowers+=( /var/empty )
-	fuse-overlayfs -o lowerdir="${ Join : "${lowers[@]}"; }",upperdir="$root",workdir="$workdir" "$buildDir" &&
-		trap "fusermount3 -u $buildDir" EXIT
+	ApplyKConfigs
 
-	if [[ ! -L "$buildDir"/bin ]]; then
-		mkdir -p "$buildDir"/usr/{bin,sbin}
-		ln -s usr/bin "$buildDir"/bin
-		ln -s usr/sbin "$buildDir"/sbin
+	# mount the overlay
+	if (( ${#lowers[@]} == 0 )); then
+		local -r tree="${ realpath "$root"; }"
+	else
+		local -r tree="${ mktemp -d; }"
+		fuse-overlayfs -o workdir="$workdir",upperdir="$root",lowerdir="${ Join : "${lowers[@]}"; }" "$tree" &&
+			trap "fusermount3 -u $tree" EXIT
 	fi
 
+	PrepareRoot "$tree"
+
 	MAKEOPTS="-j$(( $nproc / "$numJobs" ))" KERNEL_DIR=/usr/src/linux \
-		command emerge --root="$buildDir" --jobs="$numJobs" "$@"
+		command emerge --root="$tree" --jobs="$numJobs" "$@"
 }
