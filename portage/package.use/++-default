@@ -1,4 +1,5 @@
 sys-apps/util-linux -su -logger -hardlink
 sys-kernel/*-sources symlink
-sys-apps/systemd ukify boot
+sys-apps/systemd ukify boot cryptsetup
 dev-vcs/git -perl
+dev-util/bpftool -clang
