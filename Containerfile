@@ -9,7 +9,7 @@ RUN emerge --jobs=$jobs dev-vcs/git
 RUN emerge --sync
 
 # update @world --update --deep
-RUN emerge --jobs=$jobs --newuse --deep @world
+RUN emerge --jobs=$jobs --newuse --deep @world #--pretend --verbose; exit 1
 # install a kernel and set default config
 RUN emerge --jobs=1 sys-kernel/vanilla-sources && {\
 	cd /usr/src/linux; \
@@ -17,7 +17,7 @@ RUN emerge --jobs=1 sys-kernel/vanilla-sources && {\
 	make alldefconfig; \
 }
 # install tools
-RUN emerge --jobs=$jobs sys-fs/fuse-overlayfs sys-fs/dosfstools sys-fs/mtools
+RUN emerge --jobs=$jobs sys-fs/fuse-overlayfs sys-fs/dosfstools sys-fs/mtools net-misc/whois dev-util/bpftool sys-fs/erofs-utils 
 
 COPY verity-cert.config /usr/share/
 
