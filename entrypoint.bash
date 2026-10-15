@@ -43,7 +43,7 @@ Main() {
 				ExpectVal value shiftnum "$@"; shift $shiftnum
 				kconfigs+=( "$value" )
 				;;
-			nconfig|emerge|linux|cpio|image|uki|bootloader )
+			nconfig|emerge|linux|cpio|image|uki|bootloader|modconfig )
 				inMain=no
 				argv+=( "$1" )
 				;;
@@ -144,5 +144,6 @@ ExpectVal() {
 . /usr/share/entrypoint/cpio.bash
 . /usr/share/entrypoint/uki.bash
 . /usr/share/entrypoint/bootloader.bash
+. /usr/share/entrypoint/modconfig.bash
 
 Main "$@"

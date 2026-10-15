@@ -1,0 +1,3 @@
+dev-vcs/git -perl
+sys-kernel/vanilla-sources symlink
+sys-apps/systemd ukify boot cryptsetup

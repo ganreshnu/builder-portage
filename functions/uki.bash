@@ -52,7 +52,7 @@ uki() {
 				;;
 			* )
 				if [[ -d "$1" ]]; then
-					lowers+=( "$1" )
+					lowers=( "$1" "${lowers[@]}" )
 				else
 					argv+=( "$1" )
 				fi

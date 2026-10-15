@@ -51,7 +51,7 @@ emerge() {
 				;;
 			* )
 				if [[ -d "$1" ]]; then
-					lowers+=( "$1" )
+					lowers=( "$1" "${lowers[@]}" )
 				else
 					argv+=( "$1" )
 				fi
@@ -88,7 +88,11 @@ emerge() {
 			trap "fusermount3 -u $tree" EXIT
 	fi
 
-	PrepareRoot "$tree"
+	ln -sf usr/bin "$tree"/bin
+	ln -sf usr/bin "$tree"/sbin
+	mkdir -p "$tree"/usr
+	ln -sf bin "$tree"/usr/sbin
+	# PrepareRoot "$tree"
 
 	MAKEOPTS="-j$(( $nproc / "$numJobs" ))" KERNEL_DIR=/usr/src/linux \
 		command emerge --root="$tree" --jobs="$numJobs" "$@"

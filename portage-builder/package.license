@@ -1,0 +1,2 @@
+# Accepting any license that permits redistribution
+sys-kernel/linux-firmware @BINARY-REDISTRIBUTABLE

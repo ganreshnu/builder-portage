@@ -96,10 +96,10 @@ linux() {
 	# build the kernel and modules
 	#
 	local -r kversion="${ KVersion; }"
-	if [[ ! -d "$tree"/usr/lib/modules/"$kversion" ]]; then
+	if [[ ! -f "$tree"/boot/kconfig.zst ]]; then
 		ApplyKConfigs
 		printf "Building linux ${ tput bold; }%s${ tput sgr0; }.\n" "$kversion"
-
+		rm -fr "$tree"/usr/lib/modules/"$kversion"
 		# local -r realRoot="${ realpath "$root"; }"
 		pushd /usr/src/linux >/dev/null
 		make -j"$nproc" "$@" #--quiet

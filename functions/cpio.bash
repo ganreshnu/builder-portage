@@ -45,7 +45,7 @@ cpio() {
 				;;
 			* )
 				if [[ -d "$1" ]]; then
-					lowers+=( "$1" )
+					lowers=( "$1" "${lowers[@]}" )
 				else
 					modules+=( "$1" )
 				fi
@@ -73,7 +73,6 @@ cpio() {
 
 	. "$tree"/usr/lib/os-release
 	[[ -f "$tree"/boot/"$IMAGE_ID-$VARIANT_ID.cpio.zst" ]] && return
-	Notice "creating $IMAGE_ID-$VARIANT_ID.cpio.zst"
 
 	local kversion="${ KVersion; }"
 	local excludes=(
@@ -90,6 +89,7 @@ cpio() {
 
 	local cpioRoot="${ mktemp -d; }"
 	PrepareRoot "$cpioRoot"
+	mkdir "$cpioRoot"/boot
 	tar --directory="$tree" --create --preserve-permissions "${includes[@]}" "${excludes[@]}" usr |
 		tar --directory="$cpioRoot" --extract --keep-directory-symlink
 

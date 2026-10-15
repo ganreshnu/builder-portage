@@ -4,16 +4,13 @@
 bootloader() {
 	Usage() {
 		cat <<-EOD
-		Usage: bootloader [OPTIONS] [DIRECTORY...] [EMERGE_ARGS...] EBUILD...
+		Usage: bootloader [OPTIONS]
 
 		Options:
 		  --root DIRECTORY        The directory containing the root filesystem tree.
-		  --workdir DIRECTORY     OverlayFS workdir which must be on the same
-		                          partition as the layer directories.
-		  --cmdline STRING        Add a commandline entry to the kernel.
 		  --help                  Display this message and exit.
 
-		Creates a uki.
+		Installs the bootloader.
 		EOD
 	}
 
